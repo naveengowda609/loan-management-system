@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Loan Manager">
+    <meta name="theme-color" content="#667eea">
+    <title>💰 Loan Manager - Mobile</title>
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23667eea' width='192' height='192'/><text x='50%' y='50%' font-size='100' fill='white' text-anchor='middle' dominant-baseline='middle'>💰</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 0;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 2px;
+        }
+        
+        .header p {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f0f0f0;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
+            gap: 0;
+        }
+        
+        .tabs button {
+            flex: 1;
+            padding: 12px 8px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tabs button.active {
+            background: white;
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 15px;
+            padding-bottom: 60px;
+        }
+        
+        .content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .content::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 3px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 0.9em;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: #f8f9ff;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .btn-small {
+            padding: 10px 12px;
+            font-size: 0.85em;
+            flex: none;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loan-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        
+        .loan-card:active {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .loan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+        
+        .loan-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.05em;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-closed {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .loan-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 0.85em;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            color: #666;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        
+        .empty-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .empty-text {
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+        
+        .details-section {
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .payment-item {
+            background: white;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .payment-info {
+            flex: 1;
+        }
+        
+        .payment-month {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9em;
+        }
+        
+        .payment-status {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .payment-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .summary-label {
+            font-size: 0.75em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .summary-value {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 16px;
+            display: inline-block;
+            margin-bottom: 15px;
+            cursor: pointer;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .back-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .details-view {
+            display: none;
+        }
+        
+        .details-view.active {
+            display: block;
+        }
+        
+        .edit-mode {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+        }
+        
+        .info-card-title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        .info-card-desc {
+            font-size: 0.85em;
+            color: #555;
+            line-height: 1.4;
+        }
+
+        h3 {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        @media (max-height: 600px) {
+            .header {
+                padding: 10px 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .header p {
+                font-size: 0.8em;
+            }
+        }
+
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(0px, env(safe-area-inset-left));
+                padding-right: max(0px, env(safe-area-inset-right));
+                padding-top: max(0px, env(safe-area-inset-top));
+                padding-bottom: max(0px, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Loan Manager</h1>
+            <p>Track Your Loans</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab(event, 'home')">🏠 Home</button>
+            <button class="tab-btn" onclick="showTab(event, 'create')">➕ New</button>
+            <button class="tab-btn" onclick="showTab(event, 'info')">ℹ️ Info</button>
+        </div>
+        
+        <div class="content">
+            <!-- HOME TAB -->
+            <div id="home" class="tab-content active">
+                <div class="form-group">
+                    <label>📋 Select Loan:</label>
+                    <select id="loanSelect" onchange="showSelectedLoanDetails()">
+                        <option value="">-- Choose a loan --</option>
+                    </select>
+                </div>
+                <div id="homeMessage"></div>
+                <div id="loansList"></div>
+                <div id="detailsView" class="details-view"></div>
+            </div>
+            
+            <!-- CREATE LOAN TAB -->
+            <div id="create" class="tab-content">
+                <h3>Create New Loan</h3>
+                <form id="loanForm">
+                    <div class="form-group">
+                        <label>👤 Borrower Name *</label>
+                        <input type="text" id="borrowerName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>💵 Loan Amount (₹) *</label>
+                        <input type="number" id="loanAmount" required min="0" step="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>📈 Monthly Interest (₹) *</label>
+                        <input type="number" id="monthlyInterest" required min="0" step="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>📅 Total Months *</label>
+                        <input type="number" id="numberOfMonths" required min="1" value="12">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>📆 Start Date *</label>
+                        <input type="date" id="startDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>📝 Notes</label>
+                        <textarea id="notes" placeholder="Add any notes..."></textarea>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">✅ Create</button>
+                        <button type="reset" class="btn-secondary">🔄 Clear</button>
+                    </div>
+                </form>
+                <div id="formMessage"></div>
+            </div>
+            
+            <!-- INFO TAB -->
+            <div id="info" class="tab-content">
+                <h3>⚙️ Features</h3>
+                
+                <div class="info-card">
+                    <div class="info-card-title">✏️ Edit Loan Details</div>
+                    <div class="info-card-desc">
+                        Edit borrower name, loan amount, monthly interest rate, notes, and status.
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-title">🔄 Change Status</div>
+                    <div class="info-card-desc">
+                        Change loan status between Active and Closed.
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-title">💰 Track Payments</div>
+                    <div class="info-card-desc">
+                        Check boxes when monthly payments are received.
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-title">📋 Add New Loan</div>
+                    <div class="info-card-desc">
+                        Fill all required fields to create a new loan with automatic payment schedule.
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-title">📊 View Summary</div>
+                    <div class="info-card-desc">
+                        See loan amount, expected, received, and pending amounts.
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-title">🗑️ Delete Loan</div>
+                    <div class="info-card-desc">
+                        Delete any loan permanently with all payment records.
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-title">💾 Auto Save</div>
+                    <div class="info-card-desc">
+                        All data is automatically saved locally. No internet required.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTodayDate();
+            populateLoanSelect();
+            loadAllLoans();
+            document.getElementById('loanForm').addEventListener('submit', createLoan);
+        });
+
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+        }
+
+        function populateLoanSelect() {
+            const select = document.getElementById('loanSelect');
+            const loans = JSON.parse(localStorage.getItem('loans')) || [];
+            select.innerHTML = '<option value="">-- Choose a loan --</option>';
+            loans.forEach(loan => {
+                const option = document.createElement('option');
+                option.value = loan.id;
+                option.textContent = `${loan.borrowerName} (${loan.status})`;
+                select.appendChild(option);
+            });
+        }
+
+        function showSelectedLoanDetails() {
+            const select = document.getElementById('loanSelect');
+            const loanId = select.value;
+            if (loanId) {
+                viewDetails(loanId);
+            } else {
+                loadAllLoans();
+            }
+        }
+
+        function showTab(e, tabName) {
+            e.preventDefault();
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            e.target.classList.add('active');
+            if (tabName === 'home') {
+                populateLoanSelect();
+                loadAllLoans();
+            }
+        }
+
+        function loadAllLoans() {
+            const loans = JSON.parse(localStorage.getItem('loans')) || [];
+            let html = '';
+            if (loans.length === 0) {
+                html = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No loans yet!</div><p style="font-size: 0.9em;">Create your first loan to get started</p></div>';
+            } else {
+                html += '<p style="color: #666; margin-bottom: 15px;"><strong>All Loans (' + loans.length + '):</strong></p>';
+                loans.forEach(loan => {
+                    html += `<div class="loan-card" onclick="viewDetails('${loan.id}')">
+                        <div class="loan-header">
+                            <div class="loan-name">${loan.borrowerName}</div>
+                            <span class="status-badge status-${loan.status.toLowerCase()}">${loan.status}</span>
+                        </div>
+                        <div class="loan-info">
+                            <div class="info-item"><span class="info-label">Loan</span><span class="info-value">₹${loan.loanAmount}</span></div>
+                            <div class="info-item"><span class="info-label">Monthly</span><span class="info-value">₹${loan.monthlyInterest}</span></div>
+                        </div>
+                        <div class="loan-info">
+                            <div class="info-item"><span class="info-label">Expected</span><span class="info-value">₹${loan.totalExpected}</span></div>
+                            <div class="info-item"><span class="info-label">Received</span><span class="info-value">₹${loan.totalReceived}</span></div>
+                        </div>
+                    </div>`;
+                });
+            }
+            document.getElementById('loansList').innerHTML = html;
+            document.getElementById('detailsView').classList.remove('active');
+        }
+
+        function viewDetails(loanId) {
+            const loans = JSON.parse(localStorage.getItem('loans')) || [];
+            const loan = loans.find(l => l.id === loanId);
+            if (!loan) return;
+            
+            const payments = JSON.parse(localStorage.getItem('payments')) || [];
+            const loanPayments = payments.filter(p => p.loanId === loanId);
+            
+            let html = `<button class="back-btn" onclick="goBack()">← Back</button>`;
+            html += `<div class="details-section"><h3 style="margin-bottom: 10px;">${loan.borrowerName}</h3>
+                <p style="color: #666; margin-bottom: 15px;">Status: <span class="status-badge status-${loan.status.toLowerCase()}">${loan.status}</span></p></div>`;
+            
+            html += `<div class="summary-grid">
+                <div class="summary-card"><div class="summary-label">Loan</div><div class="summary-value">₹${loan.loanAmount}</div></div>
+                <div class="summary-card"><div class="summary-label">Expected</div><div class="summary-value">₹${loan.totalExpected}</div></div>
+                <div class="summary-card"><div class="summary-label">Received</div><div class="summary-value">₹${loan.totalReceived}</div></div>
+                <div class="summary-card"><div class="summary-label">Pending</div><div class="summary-value">₹${loan.totalExpected - loan.totalReceived}</div></div>
+            </div>`;
+            
+            html += `<div class="details-section"><div class="section-title">📋 Details</div>
+                <p style="margin: 8px 0;"><strong>Start:</strong> ${loan.startDate}</p>
+                <p style="margin: 8px 0;"><strong>Monthly:</strong> ₹${loan.monthlyInterest}</p>
+                <p style="margin: 8px 0;"><strong>Months:</strong> ${loan.numberOfMonths || loanPayments.length}</p>
+                <p style="margin: 8px 0;"><strong>Notes:</strong> ${loan.notes || 'None'}</p></div>`;
+            
+            html += `<div class="details-section"><div class="section-title">📅 Payments (${loanPayments.length})</div>`;
+            if (loanPayments.length > 0) {
+                loanPayments.forEach((payment, index) => {
+                    const isChecked = payment.collected > 0;
+                    html += `<div class="payment-item"><div class="payment-info">
+                        <div class="payment-month">Month ${payment.month}</div>
+                        <div class="payment-status">₹${payment.expectedAmount}</div></div>
+                        <input type="checkbox" class="payment-checkbox" ${isChecked ? 'checked' : ''} onchange="togglePaymentStatus('${loanId}', ${index}, this.checked)"></div>`;
+                });
+            }
+            html += `</div>`;
+            
+            html += `<div class="details-section edit-mode"><div class="section-title">✏️ Edit</div>
+                <div class="form-group"><label>👤 Name:</label><input type="text" id="editBorrowerName" value="${loan.borrowerName}"></div>
+                <div class="form-group"><label>💵 Amount (₹):</label><input type="number" id="editLoanAmount" value="${loan.loanAmount}"></div>
+                <div class="form-group"><label>📈 Monthly (₹):</label><input type="number" id="editMonthlyInterest" value="${loan.monthlyInterest}"></div>
+                <div class="form-group"><label>📝 Notes:</label><textarea id="editNotes">${loan.notes || ''}</textarea></div>
+                <div class="form-group"><label>🔄 Status:</label><select id="editStatus">
+                    <option value="Active" ${loan.status === 'Active' ? 'selected' : ''}>Active</option>
+                    <option value="Closed" ${loan.status === 'Closed' ? 'selected' : ''}>Closed</option></select></div>
+                <div class="button-group">
+                    <button class="btn-success btn-small" onclick="saveEditedLoan('${loanId}')">💾 Save</button>
+                    <button class="btn-warning btn-small" onclick="discardChanges()">❌ Cancel</button></div></div>`;
+            
+            html += `<div class="button-group"><button class="btn-danger btn-small" onclick="deleteLoanFunc('${loanId}')">🗑️ Delete</button></div>`;
+            
+            document.getElementById('detailsView').innerHTML = html;
+            document.getElementById('detailsView').classList.add('active');
+            document.getElementById('loansList').innerHTML = '';
+        }
+
+        function togglePaymentStatus(loanId, paymentIndex, isChecked) {
+            const payments = JSON.parse(localStorage.getItem('payments')) || [];
+            const payment = payments.filter(p => p.loanId === loanId)[paymentIndex];
+            if (payment) {
+                payment.collected = isChecked ? payment.expectedAmount : 0;
+                localStorage.setItem('payments', JSON.stringify(payments));
+                const loans = JSON.parse(localStorage.getItem('loans')) || [];
+                const loan = loans.find(l => l.id === loanId);
+                if (loan) {
+                    const loanPayments = payments.filter(p => p.loanId === loanId);
+                    loan.totalReceived = loanPayments.reduce((sum, p) => sum + p.collected, 0);
+                    localStorage.setItem('loans', JSON.stringify(loans));
+                }
+                viewDetails(loanId);
+            }
+        }
+
+        function saveEditedLoan(loanId) {
+            const loans = JSON.parse(localStorage.getItem('loans')) || [];
+            const loan = loans.find(l => l.id === loanId);
+            if (loan) {
+                loan.borrowerName = document.getElementById('editBorrowerName').value;
+                loan.loanAmount = parseInt(document.getElementById('editLoanAmount').value);
+                loan.monthlyInterest = parseInt(document.getElementById('editMonthlyInterest').value);
+                loan.notes = document.getElementById('editNotes').value;
+                loan.status = document.getElementById('editStatus').value;
+                localStorage.setItem('loans', JSON.stringify(loans));
+                alert('✅ Loan updated!');
+                populateLoanSelect();
+                viewDetails(loanId);
+            }
+        }
+
+        function discardChanges() {
+            const select = document.getElementById('loanSelect');
+            if (select.value) {
+                viewDetails(select.value);
+            }
+        }
+
+        function goBack() {
+            document.getElementById('detailsView').classList.remove('active');
+            document.getElementById('loanSelect').value = '';
+            loadAllLoans();
+        }
+
+        function createLoan(e) {
+            e.preventDefault();
+            const borrowerName = document.getElementById('borrowerName').value;
+            const loanAmount = parseInt(document.getElementById('loanAmount').value);
+            const monthlyInterest = parseInt(document.getElementById('monthlyInterest').value);
+            const numberOfMonths = parseInt(document.getElementById('numberOfMonths').value);
+            const startDate = document.getElementById('startDate').value;
+            const notes = document.getElementById('notes').value;
+            
+            const loanId = 'LOAN_' + Date.now();
+            const totalExpected = monthlyInterest * numberOfMonths;
+            
+            const loan = {
+                id: loanId, borrowerName, loanAmount, monthlyInterest, numberOfMonths, startDate, notes,
+                status: 'Active', totalExpected, totalReceived: 0, createdAt: new Date().toISOString()
+            };
+            
+            const loans = JSON.parse(localStorage.getItem('loans')) || [];
+            loans.push(loan);
+            localStorage.setItem('loans', JSON.stringify(loans));
+            
+            const payments = JSON.parse(localStorage.getItem('payments')) || [];
+            for (let month = 1; month <= numberOfMonths; month++) {
+                payments.push({
+                    id: 'PAY_' + loanId + '_' + month, loanId, month, expectedAmount: monthlyInterest, collected: 0, collectionDate: ''
+                });
+            }
+            localStorage.setItem('payments', JSON.stringify(payments));
+            
+            document.getElementById('formMessage').innerHTML = '<div class="alert alert-success">✅ Loan created!</div>';
+            document.getElementById('loanForm').reset();
+            setTodayDate();
+            
+            setTimeout(() => {
+                document.getElementById('formMessage').innerHTML = '';
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('home').classList.add('active');
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                populateLoanSelect();
+                loadAllLoans();
+            }, 1500);
+        }
+
+        function deleteLoanFunc(loanId) {
+            if (!confirm('Delete this loan permanently?')) return;
+            let loans = JSON.parse(localStorage.getItem('loans')) || [];
+            loans = loans.filter(l => l.id !== loanId);
+            localStorage.setItem('loans', JSON.stringify(loans));
+            let payments = JSON.parse(localStorage.getItem('payments')) || [];
+            payments = payments.filter(p => p.loanId !== loanId);
+            localStorage.setItem('payments', JSON.stringify(payments));
+            alert('✅ Loan deleted!');
+            goBack();
+        }
+    </script>
+</body>
+</html>
