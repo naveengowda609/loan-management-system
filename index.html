@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Loan Manager - Desktop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        .auth-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            display: none;
+        }
+        
+        .auth-container.active {
+            display: block;
+        }
+        
+        .auth-container h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+        
+        .auth-toggle {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .auth-toggle a {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: none;
+        }
+        
+        .container.active {
+            display: block;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+            flex: 1;
+        }
+        
+        .header p {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .logout-btn:hover {
+            background: #ff5252;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f0f0f0;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .tabs button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tabs button.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            margin-bottom: -2px;
+        }
+        
+        .content {
+            padding: 20px;
+            min-height: 400px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 0.9em;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: Arial;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+            flex: 1;
+        }
+        
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 0.85em;
+            flex: none;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loan-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .loan-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .loan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .loan-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-closed {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .loan-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            color: #666;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        
+        .empty-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .summary-label {
+            font-size: 0.8em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .summary-value {
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            cursor: pointer;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+        }
+        
+        .details-view {
+            display: none;
+        }
+        
+        .details-view.active {
+            display: block;
+        }
+        
+        .edit-mode {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .payment-item {
+            background: white;
+            border-left: 4px solid #667eea;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .payment-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .settings-card {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+        }
+        
+        .settings-card-title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 0.95em;
+        }
+        
+        .settings-card-desc {
+            font-size: 0.9em;
+            color: #555;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <!-- AUTH CONTAINER -->
+    <div class="auth-container active" id="authContainer">
+        <h2 id="authTitle">Create Account</h2>
+        <form id="authForm">
+            <div class="form-group">
+                <label>👤 Username *</label>
+                <input type="text" id="authUsername" required>
+            </div>
+            
+            <div class="form-group">
+                <label>📧 Email *</label>
+                <input type="email" id="authEmail" required>
+            </div>
+            
+            <div class="form-group">
+                <label>🔒 Password *</label>
+                <input type="password" id="authPassword" required>
+            </div>
+            
+            <div id="registerFields" style="display: block;">
+                <div class="form-group">
+                    <label>📱 Phone Number *</label>
+                    <input type="tel" id="authPhone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>🏠 Address *</label>
+                    <textarea id="authAddress" required></textarea>
+                </div>
+            </div>
+            
+            <div id="formMessage"></div>
+            
+            <button type="submit" class="btn-primary" style="width: 100%; margin-top: 20px;">
+                <span id="authButtonText">Register</span>
+            </button>
+        </form>
+        
+        <div class="auth-toggle">
+            <p id="toggleText">Already have an account? <a onclick="toggleAuthMode()">Login</a></p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container" id="mainContainer">
+        <div class="header">
+            <div>
+                <h1>💰 Loan Manager</h1>
+                <p id="headerSubtitle">Track Your Loans</p>
+            </div>
+            <div class="user-info">
+                <span id="userDisplay" style="color: white; font-weight: 600;"></span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab(event, 'home')">🏠 Home</button>
+            <button class="tab-btn" onclick="showTab(event, 'create')">➕ New</button>
+            <button class="tab-btn" onclick="showTab(event, 'settings')">⚙️ Settings</button>
+        </div>
+        
+        <div class="content">
+            <!-- HOME TAB -->
+            <div id="home" class="tab-content active">
+                <div class="form-group">
+                    <label>📋 Select Loan:</label>
+                    <select id="loanSelect" onchange="showSelectedLoanDetails()">
+                        <option value="">-- Choose a loan --</option>
+                    </select>
+                </div>
+                <div id="homeMessage"></div>
+                <div id="loansList"></div>
+                <div id="detailsView" class="details-view"></div>
+            </div>
+            
+            <!-- CREATE LOAN TAB -->
+            <div id="create" class="tab-content">
+                <h3 style="margin-bottom: 15px;">Create New Loan</h3>
+                <form id="loanForm">
+                    <div class="form-group">
+                        <label>👤 Borrower Name *</label>
+                        <input type="text" id="borrowerName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>👨‍🦱 Father's Name *</label>
+                        <input type="text" id="fatherName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🏠 Address *</label>
+                        <textarea id="borrowerAddress" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>💵 Loan Amount (₹) *</label>
+                        <input type="number" id="loanAmount" required min="0" step="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>📈 Monthly Interest (₹) *</label>
+                        <input type="number" id="monthlyInterest" required min="0" step="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>📅 Start Date *</label>
+                        <input type="date" id="startDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📅 End Date *</label>
+                        <input type="date" id="endDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>📝 Notes</label>
+                        <textarea id="notes" placeholder="Add any notes..."></textarea>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">✅ Create</button>
+                        <button type="reset" class="btn-secondary">🔄 Clear</button>
+                    </div>
+                </form>
+                <div id="formMessage"></div>
+            </div>
+            
+            <!-- SETTINGS TAB -->
+            <div id="settings" class="tab-content">
+                <h3 style="margin-bottom: 20px;">⚙️ Update Profile Settings</h3>
+                
+                <form id="settingsForm">
+                    <div class="form-group">
+                        <label>📧 Email</label>
+                        <input type="email" id="settingsEmail" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📱 Phone Number</label>
+                        <input type="tel" id="settingsPhone" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🏠 Address</label>
+                        <textarea id="settingsAddress" required></textarea>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="btn-success">💾 Save Changes</button>
+                        <button type="reset" class="btn-secondary">↺ Reset</button>
+                    </div>
+                </form>
+
+                <hr style="margin: 30px 0; border: none; border-top: 2px solid #ddd;">
+
+                <h3 style="margin-bottom: 20px;">About This App</h3>
+                
+                <div class="settings-card">
+                    <div class="settings-card-title">✏️ Edit Loan Details</div>
+                    <div class="settings-card-desc">
+                        Edit borrower name, father's name, address, loan amount, monthly interest rate, notes, and status information.
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="settings-card-title">📅 Date Range Tracking</div>
+                    <div class="settings-card-desc">
+                        Track loans between specific date ranges. Monthly payments are automatically generated based on your start and end dates.
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="settings-card-title">💰 Track Monthly Payments</div>
+                    <div class="settings-card-desc">
+                        View monthly payments with actual dates. Check boxes when monthly interest is received. Auto-calculates total received amount.
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="settings-card-title">📊 View Loan Summary</div>
+                    <div class="settings-card-desc">
+                        See complete loan overview with loan amount, total expected, total received, and pending amounts in one place.
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="settings-card-title">🔐 Secure Login</div>
+                    <div class="settings-card-desc">
+                        Your personal account with login and registration. Each user has their own loan records and data.
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="settings-card-title">💾 Auto Save</div>
+                    <div class="settings-card-desc">
+                        All data is automatically saved locally on your browser. No internet required after first load.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let isLoginMode = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLogin();
+            document.getElementById('authForm').addEventListener('submit', handleAuth);
+            document.getElementById('loanForm').addEventListener('submit', createLoan);
+            document.getElementById('settingsForm').addEventListener('submit', updateSettings);
+            setTodayDate();
+        });
+
+        function checkLogin() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user) {
+                currentUser = user;
+                showMainApp();
+            } else {
+                showAuthPage();
+            }
+        }
+
+        function showAuthPage() {
+            document.getElementById('authContainer').classList.add('active');
+            document.getElementById('mainContainer').classList.remove('active');
+        }
+
+        function showMainApp() {
+            document.getElementById('authContainer').classList.remove('active');
+            document.getElementById('mainContainer').classList.add('active');
+            document.getElementById('userDisplay').textContent = `👤 ${currentUser.username}`;
+            populateLoanSelect();
+            loadAllLoans();
+            loadSettings();
+        }
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            const form = document.getElementById('authForm');
+            const title = document.getElementById('authTitle');
+            const buttonText = document.getElementById('authButtonText');
+            const toggleText = document.getElementById('toggleText');
+            const registerFields = document.getElementById('registerFields');
+
+            if (isLoginMode) {
+                title.textContent = 'Login';
+                buttonText.textContent = 'Login';
+                toggleText.innerHTML = `Don't have an account? <a onclick="toggleAuthMode()">Register</a>`;
+                registerFields.style.display = 'none';
+                document.getElementById('authEmail').removeAttribute('required');
+                document.getElementById('authPhone').removeAttribute('required');
+                document.getElementById('authAddress').removeAttribute('required');
+            } else {
+                title.textContent = 'Create Account';
+                buttonText.textContent = 'Register';
+                toggleText.innerHTML = `Already have an account? <a onclick="toggleAuthMode()">Login</a>`;
+                registerFields.style.display = 'block';
+                document.getElementById('authEmail').setAttribute('required', 'required');
+                document.getElementById('authPhone').setAttribute('required', 'required');
+                document.getElementById('authAddress').setAttribute('required', 'required');
+            }
+            form.reset();
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            const username = document.getElementById('authUsername').value;
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            const phone = document.getElementById('authPhone').value;
+            const address = document.getElementById('authAddress').value;
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const messageDiv = document.getElementById('formMessage');
+
+            if (isLoginMode) {
+                // Login
+                const user = users.find(u => u.username === username && u.password === password);
+                if (user) {
+                    currentUser = user;
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    messageDiv.innerHTML = '<div class="alert alert-success">✅ Login successful!</div>';
+                    setTimeout(() => {
+                        document.getElementById('authForm').reset();
+                        showMainApp();
+                    }, 1500);
+                } else {
+                    messageDiv.innerHTML = '<div class="alert alert-error">❌ Invalid username or password!</div>';
+                }
+            } else {
+                // Register
+                if (users.find(u => u.username === username)) {
+                    messageDiv.innerHTML = '<div class="alert alert-error">❌ Username already exists!</div>';
+                    return;
+                }
+
+                const newUser = {
+                    username,
+                    email,
+                    password,
+                    phone,
+                    address,
+                    createdAt: new Date().toISOString()
+                };
+
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                currentUser = newUser;
+                localStorage.setItem('currentUser', JSON.stringify(newUser));
+                messageDiv.innerHTML = '<div class="alert alert-success">✅ Account created successfully!</div>';
+                setTimeout(() => {
+                    document.getElementById('authForm').reset();
+                    showMainApp();
+                }, 1500);
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                document.getElementById('authForm').reset();
+                isLoginMode = false;
+                showAuthPage();
+            }
+        }
+
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+        }
+
+        function calculateMonths(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const months = [];
+            const current = new Date(start);
+
+            while (current <= end) {
+                months.push(new Date(current));
+                current.setMonth(current.getMonth() + 1);
+            }
+
+            return months;
+        }
+
+        function getMonthName(date) {
+            const options = { month: 'short', year: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        function populateLoanSelect() {
+            const select = document.getElementById('loanSelect');
+            const loans = JSON.parse(localStorage.getItem(`loans_${currentUser.username}`)) || [];
+            
+            select.innerHTML = '<option value="">-- Choose a loan --</option>';
+            loans.forEach(loan => {
+                const option = document.createElement('option');
+                option.value = loan.id;
+                option.textContent = `${loan.borrowerName} (${loan.status})`;
+                select.appendChild(option);
+            });
+        }
+
+        function showSelectedLoanDetails() {
+            const select = document.getElementById('loanSelect');
+            const loanId = select.value;
+            
+            if (loanId) {
+                viewDetails(loanId);
+            } else {
+                loadAllLoans();
+            }
+        }
+
+        function showTab(e, tabName) {
+            e.preventDefault();
+            
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            e.target.classList.add('active');
+            
+            if (tabName === 'home') {
+                populateLoanSelect();
+                loadAllLoans();
+            } else if (tabName === 'settings') {
+                loadSettings();
+            }
+        }
+
+        function loadAllLoans() {
+            const loans = JSON.parse(localStorage.getItem(`loans_${currentUser.username}`)) || [];
+            
+            let html = '';
+            
+            if (loans.length === 0) {
+                html = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No loans yet!</div><p style="font-size: 0.9em;">Create your first loan to get started</p></div>';
+            } else {
+                html += '<p style="color: #666; margin-bottom: 15px;"><strong>All Loans (' + loans.length + '):</strong></p>';
+                loans.forEach(loan => {
+                    const pending = loan.totalExpected - loan.totalReceived;
+                    html += `
+                        <div class="loan-card" onclick="viewDetails('${loan.id}')">
+                            <div class="loan-header">
+                                <div class="loan-name">${loan.borrowerName}</div>
+                                <span class="status-badge status-${loan.status.toLowerCase()}">${loan.status}</span>
+                            </div>
+                            <div class="loan-info">
+                                <div class="info-item">
+                                    <span class="info-label">Loan Amount</span>
+                                    <span class="info-value">₹${loan.loanAmount}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Monthly</span>
+                                    <span class="info-value">₹${loan.monthlyInterest}</span>
+                                </div>
+                            </div>
+                            <div class="loan-info">
+                                <div class="info-item">
+                                    <span class="info-label">Period</span>
+                                    <span class="info-value">${loan.startDate} to ${loan.endDate}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Expected</span>
+                                    <span class="info-value">₹${loan.totalExpected}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('loansList').innerHTML = html;
+            document.getElementById('detailsView').classList.remove('active');
+        }
+
+        function viewDetails(loanId) {
+            const loans = JSON.parse(localStorage.getItem(`loans_${currentUser.username}`)) || [];
+            const loan = loans.find(l => l.id === loanId);
+            
+            if (!loan) return;
+            
+            const payments = JSON.parse(localStorage.getItem(`payments_${currentUser.username}`)) || [];
+            const loanPayments = payments.filter(p => p.loanId === loanId);
+            
+            let html = `<button class="back-btn" onclick="goBack()">← Back</button>`;
+            
+            html += `<div style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 10px;">${loan.borrowerName}</h3>
+                <p style="color: #666; margin-bottom: 10px;">👨‍🦱 <strong>Father's Name:</strong> ${loan.fatherName}</p>
+                <p style="color: #666; margin-bottom: 10px;">🏠 <strong>Address:</strong> ${loan.borrowerAddress}</p>
+                <p style="color: #666; margin-bottom: 15px;">Status: <span class="status-badge status-${loan.status.toLowerCase()}">${loan.status}</span></p>
+            </div>`;
+            
+            html += `<div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">Loan Amount</div>
+                    <div class="summary-value">₹${loan.loanAmount}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Total Expected</div>
+                    <div class="summary-value">₹${loan.totalExpected}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Received</div>
+                    <div class="summary-value">₹${loan.totalReceived}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Pending</div>
+                    <div class="summary-value">₹${loan.totalExpected - loan.totalReceived}</div>
+                </div>
+            </div>`;
+            
+            html += `<div style="margin-bottom: 20px;">
+                <h4 style="font-size: 1.05em; font-weight: 600; color: #333; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #667eea;">📋 Loan Details</h4>
+                <p style="margin: 8px 0;"><strong>Period:</strong> ${loan.startDate} to ${loan.endDate}</p>
+                <p style="margin: 8px 0;"><strong>Monthly Interest:</strong> ₹${loan.monthlyInterest}</p>
+                <p style="margin: 8px 0;"><strong>Total Months:</strong> ${loanPayments.length}</p>
+                <p style="margin: 8px 0;"><strong>Notes:</strong> ${loan.notes || 'None'}</p>
+            </div>`;
+            
+            html += `<div style="margin-bottom: 20px;">
+                <h4 style="font-size: 1.05em; font-weight: 600; color: #333; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #667eea;">📅 Monthly Payments (${loanPayments.length})</h4>`;
+            
+            if (loanPayments.length > 0) {
+                loanPayments.forEach((payment, index) => {
+                    const isChecked = payment.collected > 0;
+                    html += `
+                        <div class="payment-item">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #333; font-size: 0.95em;">${payment.monthName}</div>
+                                <div style="font-size: 0.85em; color: #666; margin-top: 3px;">Expected: ₹${payment.expectedAmount}</div>
+                            </div>
+                            <input type="checkbox" class="payment-checkbox" ${isChecked ? 'checked' : ''} 
+                                onchange="togglePaymentStatus('${loanId}', ${index}, this.checked)">
+                        </div>
+                    `;
+                });
+            }
+            
+            html += `</div>`;
+            
+            // Edit Details Section
+            html += `<div style="background: #f0f7ff; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #667eea;">
+                <h4 style="font-size: 1.05em; font-weight: 600; color: #333; margin-bottom: 12px;">✏️ Edit Loan Details</h4>
+                <div class="form-group">
+                    <label>👤 Borrower Name:</label>
+                    <input type="text" id="editBorrowerName" value="${loan.borrowerName}">
+                </div>
+                <div class="form-group">
+                    <label>👨‍🦱 Father's Name:</label>
+                    <input type="text" id="editFatherName" value="${loan.fatherName}">
+                </div>
+                <div class="form-group">
+                    <label>🏠 Address:</label>
+                    <textarea id="editBorrowerAddress">${loan.borrowerAddress}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>💵 Loan Amount (₹):</label>
+                    <input type="number" id="editLoanAmount" value="${loan.loanAmount}">
+                </div>
+                <div class="form-group">
+                    <label>📈 Monthly Interest (₹):</label>
+                    <input type="number" id="editMonthlyInterest" value="${loan.monthlyInterest}">
+                </div>
+                <div class="form-group">
+                    <label>📝 Notes:</label>
+                    <textarea id="editNotes">${loan.notes || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>🔄 Status:</label>
+                    <select id="editStatus">
+                        <option value="Active" ${loan.status === 'Active' ? 'selected' : ''}>Active</option>
+                        <option value="Closed" ${loan.status === 'Closed' ? 'selected' : ''}>Closed</option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button class="btn-success btn-small" onclick="saveEditedLoan('${loanId}')">💾 Save Changes</button>
+                    <button class="btn-warning btn-small" onclick="discardChanges()">❌ Cancel</button>
+                </div>
+            </div>`;
+            
+            // Action buttons
+            html += `<div class="button-group">
+                <button class="btn-danger btn-small" onclick="deleteLoanFunc('${loanId}')">🗑️ Delete Loan</button>
+            </div>`;
+            
+            document.getElementById('detailsView').innerHTML = html;
+            document.getElementById('detailsView').classList.add('active');
+            document.getElementById('loansList').innerHTML = '';
+        }
+
+        function togglePaymentStatus(loanId, paymentIndex, isChecked) {
+            const payments = JSON.parse(localStorage.getItem(`payments_${currentUser.username}`)) || [];
+            const payment = payments.filter(p => p.loanId === loanId)[paymentIndex];
+            
+            if (payment) {
+                payment.collected = isChecked ? payment.expectedAmount : 0;
+                localStorage.setItem(`payments_${currentUser.username}`, JSON.stringify(payments));
+                
+                const loans = JSON.parse(localStorage.getItem(`loans_${currentUser.username}`)) || [];
+                const loan = loans.find(l => l.id === loanId);
+                if (loan) {
+                    const loanPayments = payments.filter(p => p.loanId === loanId);
+                    loan.totalReceived = loanPayments.reduce((sum, p) => sum + p.collected, 0);
+                    localStorage.setItem(`loans_${currentUser.username}`, JSON.stringify(loans));
+                }
+                
+                viewDetails(loanId);
+            }
+        }
+
+        function saveEditedLoan(loanId) {
+            const loans = JSON.parse(localStorage.getItem(`loans_${currentUser.username}`)) || [];
+            const loan = loans.find(l => l.id === loanId);
+            
+            if (loan) {
+                loan.borrowerName = document.getElementById('editBorrowerName').value;
+                loan.fatherName = document.getElementById('editFatherName').value;
+                loan.borrowerAddress = document.getElementById('editBorrowerAddress').value;
+                loan.loanAmount = parseInt(document.getElementById('editLoanAmount').value);
+                loan.monthlyInterest = parseInt(document.getElementById('editMonthlyInterest').value);
+                loan.notes = document.getElementById('editNotes').value;
+                loan.status = document.getElementById('editStatus').value;
+                
+                localStorage.setItem(`loans_${currentUser.username}`, JSON.stringify(loans));
+                alert('✅ Loan details updated!');
+                populateLoanSelect();
+                viewDetails(loanId);
+            }
+        }
+
+        function discardChanges() {
+            const select = document.getElementById('loanSelect');
+            if (select.value) {
+                viewDetails(select.value);
+            }
+        }
+
+        function goBack() {
+            document.getElementById('detailsView').classList.remove('active');
+            document.getElementById('loanSelect').value = '';
+            loadAllLoans();
+        }
+
+        function createLoan(e) {
+            e.preventDefault();
+            
+            const borrowerName = document.getElementById('borrowerName').value;
+            const fatherName = document.getElementById('fatherName').value;
+            const borrowerAddress = document.getElementById('borrowerAddress').value;
+            const loanAmount = parseInt(document.getElementById('loanAmount').value);
+            const monthlyInterest = parseInt(document.getElementById('monthlyInterest').value);
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const notes = document.getElementById('notes').value;
+            
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('❌ Start date must be before end date!');
+                return;
+            }
+            
+            const loanId = 'LOAN_' + Date.now();
+            const months = calculateMonths(startDate, endDate);
+            const totalExpected = monthlyInterest * months.length;
+            
+            const loan = {
+                id: loanId,
+                borrowerName,
+                fatherName,
+                borrowerAddress,
+                loanAmount,
+                monthlyInterest,
+                startDate,
+                endDate,
+                notes,
+                status: 'Active',
+                totalExpected,
+                totalReceived: 0,
+                createdAt: new Date().toISOString()
+            };
+            
+            const loans = JSON.parse(localStorage.getItem(`loans_${currentUser.username}`)) || [];
+            loans.push(loan);
+            localStorage.setItem(`loans_${currentUser.username}`, JSON.stringify(loans));
+            
+            const payments = JSON.parse(localStorage.getItem(`payments_${currentUser.username}`)) || [];
+            months.forEach((date, index) => {
+                payments.push({
+                    id: 'PAY_' + loanId + '_' + index,
+                    loanId,
+                    month: index + 1,
+                    monthName: getMonthName(date),
+                    expectedAmount: monthlyInterest,
+                    collected: 0,
+                    collectionDate: ''
+                });
+            });
+            localStorage.setItem(`payments_${currentUser.username}`, JSON.stringify(payments));
+            
+            document.getElementById('formMessage').innerHTML = '<div class="alert alert-success">✅ Loan created successfully!</div>';
+            document.getElementById('loanForm').reset();
+            setTodayDate();
+            
+            setTimeout(() => {
+                document.getElementById('formMessage').innerHTML = '';
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('home').classList.add('active');
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                populateLoanSelect();
+                loadAllLoans();
+            }, 1500);
+        }
+
+        function deleteLoanFunc(loanId) {
+            if (!confirm('Delete this loan permanently?')) return;
+            
+            let loans = JSON.parse(localStorage.getItem(`loans_${currentUser.username}`)) || [];
+            loans = loans.filter(l => l.id !== loanId);
+            localStorage.setItem(`loans_${currentUser.username}`, JSON.stringify(loans));
+            
+            let payments = JSON.parse(localStorage.getItem(`payments_${currentUser.username}`)) || [];
+            payments = payments.filter(p => p.loanId !== loanId);
+            localStorage.setItem(`payments_${currentUser.username}`, JSON.stringify(payments));
+            
+            alert('✅ Loan deleted!');
+            goBack();
+        }
+
+        function loadSettings() {
+            document.getElementById('settingsEmail').value = currentUser.email || '';
+            document.getElementById('settingsPhone').value = currentUser.phone || '';
+            document.getElementById('settingsAddress').value = currentUser.address || '';
+        }
+
+        function updateSettings(e) {
+            e.preventDefault();
+            
+            currentUser.email = document.getElementById('settingsEmail').value;
+            currentUser.phone = document.getElementById('settingsPhone').value;
+            currentUser.address = document.getElementById('settingsAddress').value;
+            
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const userIndex = users.findIndex(u => u.username === currentUser.username);
+            if (userIndex !== -1) {
+                users[userIndex] = currentUser;
+                localStorage.setItem('users', JSON.stringify(users));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                alert('✅ Settings updated successfully!');
+            }
+        }
+    </script>
+</body>
+</html>
