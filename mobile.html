@@ -34,7 +34,139 @@
             height: 100vh;
             overflow: hidden;
         }
-        
+
+        /* AUTH STYLES */
+        .auth-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .auth-container.active {
+            display: flex;
+        }
+
+        .auth-box {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-box h2 {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .auth-form-group {
+            margin-bottom: 16px;
+        }
+
+        .auth-form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #2d3748;
+            font-size: 0.92em;
+        }
+
+        .auth-form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e0e7ff;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .auth-form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: #f8f9ff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .auth-btn:active {
+            transform: scale(0.98);
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 16px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .auth-toggle a {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        #authMessage {
+            text-align: center;
+            margin-bottom: 16px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        #authMessage.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        #authMessage.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* MAIN APP STYLES */
         .container {
             width: 100%;
             height: 100vh;
@@ -42,6 +174,11 @@
             flex-direction: column;
             background: white;
             border-radius: 0;
+            display: none;
+        }
+
+        .container.active {
+            display: flex;
         }
         
         .header {
@@ -51,18 +188,53 @@
             text-align: center;
             flex-shrink: 0;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            flex: 1;
+            text-align: center;
         }
         
         .header h1 {
-            font-size: 1.9em;
-            margin-bottom: 3px;
+            font-size: 1.6em;
+            margin-bottom: 2px;
             font-weight: 700;
         }
         
         .header p {
-            font-size: 0.85em;
+            font-size: 0.8em;
             opacity: 0.95;
             font-weight: 500;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-name {
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:active {
+            background: rgba(255,255,255,0.3);
         }
         
         .tabs {
@@ -544,11 +716,11 @@
             }
             
             .header h1 {
-                font-size: 1.6em;
+                font-size: 1.4em;
             }
             
             .header p {
-                font-size: 0.8em;
+                font-size: 0.75em;
             }
         }
 
@@ -563,10 +735,57 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- AUTH CONTAINER -->
+    <div class="auth-container active" id="authContainer">
+        <div class="auth-box">
+            <h2 id="authTitle">💰 Register</h2>
+            <div id="authMessage"></div>
+            <form id="authForm">
+                <div class="auth-form-group">
+                    <label>👤 Username *</label>
+                    <input type="text" id="authUsername" placeholder="Create username" required>
+                </div>
+
+                <div class="auth-form-group">
+                    <label>📧 Email *</label>
+                    <input type="email" id="authEmail" placeholder="Enter your email" required>
+                </div>
+
+                <div class="auth-form-group">
+                    <label>📱 Phone Number *</label>
+                    <input type="tel" id="authPhone" placeholder="Enter phone number" required>
+                </div>
+
+                <div class="auth-form-group">
+                    <label>🏠 Address *</label>
+                    <input type="text" id="authAddress" placeholder="Enter your address" required>
+                </div>
+
+                <div class="auth-form-group">
+                    <label>🔒 Password *</label>
+                    <input type="password" id="authPassword" placeholder="Create a password" required>
+                </div>
+
+                <button type="submit" class="auth-btn">Sign Up</button>
+            </form>
+
+            <div class="auth-toggle">
+                <p>Already have an account? <a onclick="toggleAuthMode()">Login here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container" id="mainContainer">
         <div class="header">
-            <h1>💰 Loan Manager</h1>
-            <p>Professional Loan Tracking System</p>
+            <div class="header-content">
+                <h1>💰 Loan Manager</h1>
+                <p>Professional Loan Tracking</p>
+            </div>
+            <div class="user-section">
+                <span class="user-name">👤 <span id="userDisplay"></span></span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
         </div>
         
         <div class="tabs">
@@ -724,11 +943,127 @@
     </div>
 
     <script>
+        let currentUser = null;
+
         document.addEventListener('DOMContentLoaded', function() {
             setTodayDate();
-            loadAllLoans();
+            checkIfLoggedIn();
+            document.getElementById('authForm').addEventListener('submit', handleAuth);
             document.getElementById('loanForm').addEventListener('submit', createLoan);
         });
+
+        function checkIfLoggedIn() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showApp();
+            }
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            const isRegister = document.getElementById('authTitle').textContent.includes('Register');
+            const username = document.getElementById('authUsername').value;
+            const email = document.getElementById('authEmail').value;
+            const phone = document.getElementById('authPhone').value;
+            const address = document.getElementById('authAddress').value;
+            const password = document.getElementById('authPassword').value;
+            const messageEl = document.getElementById('authMessage');
+
+            if (isRegister) {
+                // Register
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                if (users.find(u => u.username === username)) {
+                    showAuthMessage('Username already exists!', 'error');
+                    return;
+                }
+                const newUser = {
+                    id: Date.now(),
+                    username,
+                    email,
+                    phone,
+                    address,
+                    password
+                };
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                currentUser = newUser;
+                localStorage.setItem('currentUser', JSON.stringify(newUser));
+                showAuthMessage('✅ Account created! Welcome!', 'success');
+                setTimeout(showApp, 1500);
+            } else {
+                // Login
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const user = users.find(u => u.username === username && u.password === password);
+                if (user) {
+                    currentUser = user;
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    showAuthMessage('✅ Login successful!', 'success');
+                    setTimeout(showApp, 1500);
+                } else {
+                    showAuthMessage('❌ Invalid username or password!', 'error');
+                }
+            }
+        }
+
+        function showAuthMessage(message, type) {
+            const messageEl = document.getElementById('authMessage');
+            messageEl.textContent = message;
+            messageEl.className = type;
+        }
+
+        function toggleAuthMode() {
+            const isRegister = document.getElementById('authTitle').textContent.includes('Register');
+            const authTitle = document.getElementById('authTitle');
+            const phoneGroup = document.getElementById('authPhone').parentElement;
+            const addressGroup = document.getElementById('authAddress').parentElement;
+            const emailGroup = document.getElementById('authEmail').parentElement;
+            const toggleText = document.querySelector('.auth-toggle p');
+            const submitBtn = document.querySelector('.auth-btn');
+
+            if (isRegister) {
+                authTitle.textContent = '💰 Login';
+                phoneGroup.style.display = 'none';
+                addressGroup.style.display = 'none';
+                emailGroup.style.display = 'none';
+                document.getElementById('authPhone').removeAttribute('required');
+                document.getElementById('authAddress').removeAttribute('required');
+                document.getElementById('authEmail').removeAttribute('required');
+                toggleText.innerHTML = 'Don\'t have an account? <a onclick="toggleAuthMode()">Register here</a>';
+                submitBtn.textContent = 'Login';
+            } else {
+                authTitle.textContent = '💰 Register';
+                phoneGroup.style.display = 'block';
+                addressGroup.style.display = 'block';
+                emailGroup.style.display = 'block';
+                document.getElementById('authPhone').setAttribute('required', '');
+                document.getElementById('authAddress').setAttribute('required', '');
+                document.getElementById('authEmail').setAttribute('required', '');
+                toggleText.innerHTML = 'Already have an account? <a onclick="toggleAuthMode()">Login here</a>';
+                submitBtn.textContent = 'Sign Up';
+            }
+            document.getElementById('authForm').reset();
+            document.getElementById('authMessage').textContent = '';
+        }
+
+        function showApp() {
+            document.getElementById('authContainer').classList.remove('active');
+            document.getElementById('mainContainer').classList.add('active');
+            document.getElementById('userDisplay').textContent = currentUser.username;
+            loadAllLoans();
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                document.getElementById('mainContainer').classList.remove('active');
+                document.getElementById('authContainer').classList.add('active');
+                document.getElementById('authForm').reset();
+                document.getElementById('authMessage').textContent = '';
+                toggleAuthMode();
+            }
+        }
 
         function setTodayDate() {
             const today = new Date().toISOString().split('T')[0];
@@ -770,15 +1105,16 @@
 
         function loadAllLoans() {
             const loans = JSON.parse(localStorage.getItem('loans')) || [];
+            const userLoans = loans.filter(l => l.userId === currentUser.id);
             const summaryCards = document.getElementById('summaryCards');
             const loansList = document.getElementById('loansList');
             const homeMessage = document.getElementById('homeMessage');
 
             // Calculate summary
-            const totalLoans = loans.length;
-            const activeLoans = loans.filter(l => l.status === 'Active').length;
-            const totalLoanAmount = loans.reduce((sum, l) => sum + (l.loanAmount || 0), 0);
-            const totalInterestAmount = loans.reduce((sum, l) => sum + (l.totalInterest || 0), 0);
+            const totalLoans = userLoans.length;
+            const activeLoans = userLoans.filter(l => l.status === 'Active').length;
+            const totalLoanAmount = userLoans.reduce((sum, l) => sum + (l.loanAmount || 0), 0);
+            const totalInterestAmount = userLoans.reduce((sum, l) => sum + (l.totalInterest || 0), 0);
 
             // Display summary cards
             summaryCards.innerHTML = `
@@ -800,7 +1136,7 @@
                 </div>
             `;
 
-            if (loans.length === 0) {
+            if (userLoans.length === 0) {
                 homeMessage.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No loans yet!</div><p style="font-size: 0.9em; color: #999;">Create your first loan to get started</p></div>';
                 loansList.innerHTML = '';
                 return;
@@ -808,7 +1144,7 @@
 
             homeMessage.innerHTML = '';
             let html = '';
-            loans.forEach(loan => {
+            userLoans.forEach(loan => {
                 html += `<div class="loan-card" onclick="viewDetails('${loan.id}')">
                     <div class="loan-header">
                         <div class="loan-name">${loan.borrowerName}</div>
@@ -1009,6 +1345,7 @@
             const loanId = 'LOAN_' + Date.now();
             const loan = {
                 id: loanId,
+                userId: currentUser.id,
                 borrowerName,
                 fatherName,
                 borrowerAddress,
